@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>無人機學科測驗系統</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#2563eb">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🚁 無人機學科測驗系統</h1>
+
+<p id="questionCount">
+題庫載入中...
+</p>
+
+</header>
+
+<!-- 主選單 -->
+
+<section class="card">
+
+<h2>快速測驗</h2>
+
+<div class="button-grid">
+
+<button onclick="startRandom(10)">
+隨機 10 題
+</button>
+
+<button onclick="startRandom(20)">
+隨機 20 題
+</button>
+
+<button onclick="startRandom(50)">
+隨機 50 題
+</button>
+
+<button onclick="startMockExam()">
+模擬正式考試
+</button>
+
+</div>
+
+</section>
+
+<!-- 章節練習 -->
+
+<section class="card">
+
+<h2>章節練習</h2>
+
+<div class="button-grid">
+
+<button onclick="practiceChapter('第一章')">
+第一章 法規
+</button>
+
+<button onclick="practiceChapter('第二章')">
+第二章 飛行原理
+</button>
+
+<button onclick="practiceChapter('第三章')">
+第三章 氣象
+</button>
+
+<button onclick="practiceChapter('第四章')">
+第四章 緊急處置
+</button>
+
+</div>
+
+</section>
+
+<!-- 搜尋 -->
+
+<section class="card">
+
+<h2>題庫搜尋</h2>
+
+<div class="search-row">
+
+<input
+type="text"
+id="keyword"
+placeholder="搜尋關鍵字..."
+>
+
+<button onclick="searchQuestion()">
+搜尋
+</button>
+
+</div>
+
+<div id="searchResult"></div>
+
+</section>
+
+<!-- 功能區 -->
+
+<section class="card">
+
+<h2>其他功能</h2>
+
+<div class="button-grid">
+
+<button onclick="showWrongQuestions()">
+❌ 錯題庫
+</button>
+
+<button onclick="showFavorites()">
+⭐ 收藏題
+</button>
+
+<button onclick="showStatistics()">
+📊 統計分析
+</button>
+
+</div>
+
+</section>
+
+<!-- 統計 -->
+
+<section
+class="card hidden"
+id="statisticsPanel">
+
+<h2>學習統計</h2>
+
+<div class="stats-grid">
+
+<div class="stat-box">
+<h3 id="totalAnswered">0</h3>
+<p>總作答數</p>
+</div>
+
+<div class="stat-box">
+<h3 id="correctRate">0%</h3>
+<p>正確率</p>
+</div>
+
+<div class="stat-box">
+<h3 id="favoriteCount">0</h3>
+<p>收藏題數</p>
+</div>
+
+<div class="stat-box">
+<h3 id="wrongCount">0</h3>
+<p>錯題數</p>
+</div>
+
+</div>
+
+<canvas id="progressChart"></canvas>
+
+</section>
+
+<!-- 測驗區 -->
+
+<section
+id="quizContainer"
+class="hidden">
+
+<div class="quiz-header">
+
+<div id="progressText">
+第 1 題
+</div>
+
+<div id="scoreText">
+分數：0
+</div>
+
+</div>
+
+<div class="progress">
+
+<div
+id="progressBar"
+class="progress-bar">
+</div>
+
+</div>
+
+<div
+class="question-card"
+id="questionCard">
+
+<h2 id="questionTitle"></h2>
+
+<div id="optionsArea"></div>
+
+</div>
+
+<div class="action-bar">
+
+<button
+class="secondary-btn"
+onclick="addFavoriteCurrent()">
+
+⭐ 收藏此題
+
+</button>
+
+</div>
+
+</section>
+
+<!-- 測驗結束 -->
+
+<section
+id="resultContainer"
+class="hidden">
+
+<div class="card">
+
+<h2>
+🎉 測驗完成
+</h2>
+
+<h1 id="finalScore">
+0%
+</h1>
+
+<p id="finalText"></p>
+
+<button onclick="backHome()">
+返回首頁
+</button>
+
+</div>
+
+</section>
+
+<!-- 搜尋展示 -->
+
+<section
+id="searchContainer"
+class="hidden">
+
+<div class="card">
+
+<h2>
+搜尋結果
+</h2>
+
+<div id="searchList">
+
+</div>
+
+</div>
+
+</section>
+
+<!-- 錯題 -->
+
+<section
+id="wrongContainer"
+class="hidden">
+
+<div class="card">
+
+<h2>❌ 錯題庫</h2>
+
+<button onclick="practiceWrongQuestions()">
+重新練習錯題
+</button>
+
+<button onclick="clearWrongQuestions()">
+清空錯題庫
+</button>
+
+<hr>
+
+<div id="wrongList"></div>
+
+</div>
+
+</section>
+
+<!-- 收藏 -->
+
+<section
+id="favoriteContainer"
+class="hidden">
+
+<div class="card">
+
+<h2>⭐ 收藏題</h2>
+
+<div id="favoriteList"></div>
+
+</div>
+
+</section>
+
+<footer>
+
+<p>
+Drone Exam System
+</p>
+
+</footer>
+
+<script src="app.js"></script>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+
+window.addEventListener('load', () => {
+
+navigator.serviceWorker.register(
+'service-worker.js'
+);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
